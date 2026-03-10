@@ -1,0 +1,13 @@
+# Corpus (large, can be re-cloned)
+corpus/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# IDE
+.idea/
+.vscode/
