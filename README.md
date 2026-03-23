@@ -2,16 +2,26 @@
 
 A retrieval-augmented generation (RAG) system for querying Kubernetes' technical documentation with citations.
 
+## Pipeline
+ingest → chunk → index → retrieve → generate → evaluate
+
 ## Phase 1: Fundamentals
 Goal: given docs + question → answer with citations.
 
 | Step | Status | Description |
 |------|--------|-------------|
 | 1 | Completed | Choose corpus + obtain Kubernetes docs |
-| 2 | Pending | Document ingestion (load Markdown) |
-| 3 | Pending | Chunking (500–800 tokens, ~100 overlap) |
+| 2 | Completed | Document ingestion (load + clean Markdown) |
+| 3 | Completed | Chunking (heading-based split, ~100 token overlap) |
 | 4 | Pending | Embeddings + vector store |
 | 5 | Pending | Retrieval + answer generation with citations |
+
+### Phase 1 commands
+
+```bash
+python ingest.py   # Step 2: raw Markdown → data/documents.jsonl
+python chunk.py    # Step 3: documents.jsonl → data/chunks.jsonl
+```
 
 ## Phase 2: Production-quality retrieval + guardrails
 Goal: improve retrieval precision.
@@ -39,15 +49,26 @@ Goal: measure quality and prevent regressions.
 ## Corpus
 
 - **Source**: [Kubernetes documentation](https://kubernetes.io/docs/) (English)
-- **Details**: See [CORPUS.md](./CORPUS.md)
+- **Details**: See [docs/corpus.md](./docs/corpus.md)
 
 ## Project Structure
 
 ```
 rag/
-├── corpus/                 # Raw documentation (cloned)
-│   └── kubernetes-website/
-├── CORPUS.md               # Corpus definition and scope
-├── README.md
-└── ...
+├── corpus/kubernetes-website/    # Step 1: raw docs
+├── data/
+│   ├── documents.jsonl           # output of ingest
+│   ├── chunks.jsonl              # output of chunking
+│   └── chromadb/                 # vector store (output of index)
+├── docs/                         # engineering rationale and decisions
+│   ├── why-rag.md
+│   ├── corpus.md
+│   ├── ingestion.md
+│   ├── chunking.md
+│   └── embeddings.md
+├── ingest.py                     # Step 2: markdown → documents.jsonl
+├── chunk.py                      # Step 3: documents.jsonl → chunks.jsonl
+├── index.py                      # Step 4: chunks.jsonl → vector store
+├── query.py                      # Step 5: question → cited answer
+└── README.md
 ```
